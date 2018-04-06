@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container" xmlns="http://www.w3.org/1999/html">
+    <div class="row">
+        <div class="col-3">
+
+        </div>
+        <div class="col-9">
+            <form method="post" action="{% url 'update_profile' %}" enctype="multipart/form-data" >
+                {% csrf_token %}
+                {{ form.username }}
+                {{ form.first_name }}
+                {{ form.last_name }}
+                {{ form.email }}
+                {{ form.password }}
+                <input type="password" name="confirm_password" class="form-control" placeholder="confirm password"
+                       id="id_confirm_password" />
+                <div class="input-group mb-3">
+                    <div class="custom-file">
+                        {{ form.avatar }}
+{#                        <label class="custom-file-label" for="id_avatar">Choose file</label>#}
+                    </div>
+                    <div class="input-group-append">
+                        <input class="input-group-text" type="submit" value="Upload" />
+                    </div>
+                </div>
+{#                <button type="submit">Save</button>#}
+            </form>
+            <a href="{% url 'index' user.id %}"><button class="input-group-text">Return</button></a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container">
+        <div class="row bg-dark text-light">
+            <div class="col">
+                Hello {{ user.username }}
+                {{ user.id }}
+                {{ current_page_id }}
+            </div>
+            <div class="col text-right">
+                <form method="post" action="{% url 'logging_out' %}">
+                    {% csrf_token %}
+                    <input class="btn btn-sm btn-light" type="submit" value="Logout">
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-3 bg-secondary text-white">
+                <div class="row">
+                    <div class="col-md-12">
+                        <img src="/media/{{ avatar }}" width="100%" />
+                        {% if is_friend %}
+                            <a href="{% url 'remove_friend' current_page_id %}">Remove from friendslist</a>
+                        {% else %}
+                            <a href="{% url 'add_friend' current_page_id %}">Add to friendslist</a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <a href="{% url 'edit_profile' user.id %}">Profile</a>
+                    </div>
+                </div>
+                 <div class="row">
+                    <div class="col">
+                        <a href="#">Albums</a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <a href="{% url 'friends' user.id %}">Friends</a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <a href="#">Messages</a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <a href="#">Settings</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-9">
+
+
+                {% if user.id == current_page_id %}
+                    <p>owner</p>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

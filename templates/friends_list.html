@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+ <div class="container">
+    <div class="row">
+        <div class="col-3">
+
+        </div>
+        <div class="col-9">
+            {% for friend in friends %}
+                <div class="row">
+                    <div class="col">
+                        <a href="{% url 'index' friend.id %}">{{ friend.username }}</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
