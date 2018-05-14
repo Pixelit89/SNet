@@ -1,0 +1,27 @@
+<script>
+
+    {% for group in groups %}
+    var group = '{{ group }}';
+    var chatSocket_group = new WebSocket(
+        'ws://' + window.location.host +
+        '/ws/chat/' + group + '/');
+    chatSocket_group.onmessage = function(e) {
+        console.log('Got new message!');
+        var mess_elem = document.getElementById('new_message');
+        console.log(mess_elem);
+        if (typeof mess_elem == 'undefined' || mess_elem == null) {
+            var elem = document.createElement('span');
+            elem.id = 'new_message';
+            elem.innerText = 'new!';
+            elem.style.backgroundColor = '#E25A59';
+            elem.style.padding = '5px';
+            var messages = document.getElementById("messages");
+            messages.appendChild(elem);
+        }
+    }
+
+    chatSocket_group.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+    {% endfor %}
+</script>

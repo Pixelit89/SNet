@@ -1,13 +1,50 @@
 {% extends 'base.html' %}
-{% load static %}
 {% block content %}
-<link type="text/css" rel="stylesheet" href="{% static "css/signin.css" %}">
-    <div class="container">
-        <form method="post" class="form-signin" action="{% url 'logging_in' %}">
-            {% csrf_token %}
-            {{ form.username }}
-            {{ form.password }}
-            <input class="btn btn-lg btn-primary btn-block" type="submit" value="Sign in">
-    </form>
-</div>
+		<div class="container-fluid-full">
+		<div class="row-fluid">
+					
+			<div class="row-fluid">
+				<div class="login-box">
+					<div class="icons">
+						<a href="index.html"><i class="halflings-icon home"></i></a>
+						<a href="#"><i class="halflings-icon cog"></i></a>
+					</div>
+					<h2>Login to your account</h2>
+					<form class="form-horizontal" action="{% url 'logging_in' %}" method="post">
+						{% csrf_token %}
+                        <fieldset>
+							
+							<div class="input-prepend" title="Username">
+								<span class="add-on"><i class="halflings-icon user"></i></span>
+								{{ form.username }}
+							</div>
+							<div class="clearfix"></div>
+
+							<div class="input-prepend" title="Password">
+								<span class="add-on"><i class="halflings-icon lock"></i></span>
+                                {{ form.password }}
+							</div>
+							<div class="clearfix"></div>
+							
+							<label class="remember" for="remember"><input type="checkbox" id="remember" />Remember me</label>
+
+							<div class="button-login">	
+								<button type="submit" class="btn btn-primary">Login</button>
+							</div>
+							<div class="clearfix"></div>
+                        </fieldset>
+					</form>
+					<hr>
+					<h3>Forgot Password?</h3>
+					<p>
+						No problem, <a href="#">click here</a> to get a new password.
+					</p>	
+				</div><!--/span-->
+			</div><!--/row-->
+			
+
+	</div><!--/.fluid-container-->
+	
+		</div><!--/fluid-row-->
+
 {% endblock %}

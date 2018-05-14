@@ -1,18 +1,61 @@
 {% extends 'base.html' %}
-{% load static %}
 {% block content %}
-<link type="text/css" rel="stylesheet" href="{% static "css/signin.css" %}">
-<div class="container">
-    <form method="post" class="form-signin" action="{% url 'register' %}">
-        {% csrf_token %}
-        {{ form.username }}
-        {{ form.first_name }}
-        {{ form.last_name }}
-        {{ form.email }}
-        {{ form.password }}
-        <input type="password" name="confirm_password" class="form-control" placeholder="confirm password"
-        required id="id_confirm_password" />
-        <input type="submit" class="btn btn-lg btn-primary btn-block" value="Register" />
-    </form>
-</div>
+		<div class="container-fluid-full">
+		<div class="row-fluid">
+					
+			<div class="row-fluid">
+				<div class="login-box">
+					<div class="icons">
+						<a href="index.html"><i class="halflings-icon home"></i></a>
+						<a href="#"><i class="halflings-icon cog"></i></a>
+					</div>
+					<h2>Register a new account</h2>
+					<form class="form-horizontal" action="{% url 'register' %}" method="post">
+						{% csrf_token %}
+                        <fieldset>
+							
+							<div class="input-prepend" title="Username">
+								<span class="add-on"><i class="halflings-icon user"></i></span>
+								{{ form.username }}
+							</div>
+							<div class="clearfix"></div>
+                            <div class="input-prepend" title="Username">
+								<span class="add-on"><i class="halflings-icon user"></i></span>
+								{{ form.first_name }}
+							</div>
+							<div class="clearfix"></div>
+                            <div class="input-prepend" title="Username">
+								<span class="add-on"><i class="halflings-icon user"></i></span>
+								{{ form.last_name }}
+							</div>
+							<div class="clearfix"></div>
+                            <div class="input-prepend" title="Username">
+								<span class="add-on"><i class="halflings-icon user"></i></span>
+								{{ form.email }}
+							</div>
+							<div class="clearfix"></div>
+							<div class="input-prepend" title="Password">
+								<span class="add-on"><i class="halflings-icon lock"></i></span>
+                                {{ form.password }}
+							</div>
+							<div class="clearfix"></div>
+							<div class="input-prepend" title="Password">
+								<span class="add-on"><i class="halflings-icon lock"></i></span>
+								<input class="input-large span10" name="confirm_password" id="id_confirm_password" type="password" placeholder="confirm password"/>
+							</div>
+                            <div class="clearfix"></div>
+							<div class="button-login">	
+								<button type="submit" class="btn btn-primary">Register</button>
+							</div>
+							<div class="clearfix"></div>
+                        </fieldset>
+					</form>
+					<hr>
+				</div><!--/span-->
+			</div><!--/row-->
+			
+
+	</div><!--/.fluid-container-->
+	
+		</div><!--/fluid-row-->
 {% endblock %}
