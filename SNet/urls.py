@@ -27,6 +27,7 @@ application = ProtocolTypeRouter({
 
 
 urlpatterns = [
+    re_path(r'^$', views.Redirect.as_view()),
     re_path(r'^id_(?P<pk>[0-9])$', views.IndexView.as_view(), name='index'),
     re_path(r'^login$', views.LoginView.as_view(), name='login'),
     re_path(r'^logging_in$', views.logging_in, name='logging_in'),
@@ -34,11 +35,15 @@ urlpatterns = [
     re_path(r'^registration$', views.RegistrationView.as_view(), name='registration'),
     re_path(r'^register$', views.registration, name='register'),
     re_path(r'^edit_profile_(?P<pk>[0-9])$', views.EditProfileView.as_view(), name='edit_profile'),
-    re_path(r'^update_profile', views.update_profile, name='update_profile'),
-    re_path(r'^add_friend_(?P<current_page_id>[0-9])', views.add_friend, name='add_friend'),
-    re_path(r'^remove_friend_(?P<current_page_id>[0-9])', views.remove_friend, name='remove_friend'),
+    re_path(r'^edit_profile_(?P<pk>[0-9])_update$', views.update_profile, name='update_profile'),
+    re_path(r'^friends_request_(?P<current_page_id>[0-9])$', views.friends_request, name='friends_request'),
+    re_path(r'^friends_request_(?P<friend_request_id>[0-9])_accept$', views.accept_friend, name='accept_friend'),
+    re_path(r'^remove_friend_(?P<current_page_id>[0-9])$', views.remove_friend, name='remove_friend'),
     re_path(r'^id_(?P<pk>[0-9])/friends$', views.FriendsView.as_view(), name='friends'),
-    re_path(r'^chat$', views.index, name="messages"),
-    re_path(r'^chat/(?P<room_name>[^/]+)$', views.room, name='room'),
+    re_path(r'^id_(?P<pk>[0-9])/chat$', views.ConversationsList.as_view(), name="messages"),
+    re_path(r'^id_(?P<pk>[0-9])/gallery$', views.GalleryView.as_view(), name="gallery"),
+    re_path(r'^id_(?P<pk>[0-9])/wall_post$', views.add_wall_message, name="wall_post"),
+    re_path(r'^upload_pic$', views.upload_pic, name='upload_pic'),
+    re_path(r'^id_(?P<pk>[0-9])/chat/(?P<group>[_0-9]+)/$', views.RoomView.as_view(), name='room'),
     path('admin/', admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

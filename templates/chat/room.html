@@ -1,21 +1,96 @@
 {% extends 'base.html' %}
 {% block content %}
 <!-- chat/templates/chat/room.html -->
-
-    <textarea id="chat-log" cols="100" rows="20"></textarea><br/>
-    <input id="chat-message-input" type="text" size="100"/><br/>
-    <input id="chat-message-submit" type="button" value="Send"/>
+    {% include 'sidebar.html' %}
+    <div id="content" class="span10">
+        <div class="box span8" onTablet="span12" onDesktop="span8">
+            <div class="box-header">
+                <h2><i class="halflings-icon white comment"></i><span class="break"></span>Chats</h2>
+                <div class="box-icon">
+                    <a href="#" class="btn-minimize"><i class="halflings-icon white chevron-up"></i></a>
+                    <a href="#" class="btn-close"><i class="halflings-icon white remove"></i></a>
+                </div>
+            </div>
+            <div class="box-content">
+                <ul id='chat-log' class="chat">
+                    {% for item in history %}
+                    {% if item.user.id == user.id %}
+                    <li class="right">
+                    {% else %}
+                    <li class="left">
+                    {% endif %}
+                        <a href="{% url 'index' item.user_id %}"><img class="avatar" alt="{{ item.user.username }}" src="/media/{{ item.user.avatar }}"></a>
+                        <span class="message"><span class="arrow"></span>
+                            <a href="{% url 'index' item.user_id %}"><span class="from"><strong>{{ item.user.first_name }} {{ item.user.last_name }}</strong></span></a>
+                            <span class="text time"><strong>{{ item.pub_date }}</strong></span>
+                            <span class="text">
+                                {{ item.message }}
+                            </span>
+                        </span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <div class="chat-form">
+                    <textarea id="chat-message-input"></textarea>
+                    <button id="chat-message-submit" class="btn btn-info">Send message</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{#    <div id="content" class="span10">#}
+{#    <form class="replyForm">#}
+{#        <fieldset>#}
+{#            <textarea tabindex="3" disabled class="input-xlarge span12" id="chat-log" name="body" rows="12"></textarea>#}
+{#            <input tabindex="3" class="input-xlarge span12" id="chat-message-input" type="text" size="100"/>#}
+{#            <div class="actions">#}
+{#                <input tabindex="3" id="chat-message-submit" class="btn btn-success" type="button" value="Send"/>#}
+{#            </div>#}
+{#        </fieldset>#}
+{#    </form>#}
+{#    </div>#}
+{#    <textarea id="chat-log" cols="100" rows="20"></textarea><br/>#}
+{#    <input id="chat-message-input" type="text" size="100"/><br/>#}
+{#    <input tabindex="3" id="chat-message-submit" class="btn btn-success" type="button" value="Send"/>#}
     <script>
-    var roomName = {{ room_name_json }};
+    var chatLogDom = document.getElementById('chat-log');
+
+    var group = {{ group_json }};
 
     var chatSocket = new WebSocket(
         'ws://' + window.location.host +
-        '/ws/chat/' + roomName + '/');
+        '/ws/chat/' + group + '/');
 
     chatSocket.onmessage = function(e) {
         var data = JSON.parse(e.data);
         var message = data['message'];
-        document.querySelector('#chat-log').value += (message + '\n');
+        var user_id = data['user_id'];
+        var pub_date = data['pub_date'];
+        var li = document.createElement('li');
+        if (user_id == '{{ user.id }}') {
+            li.className = "right";
+            var first_name = '{{ user.first_name }}';
+            var last_name = '{{ user.last_name }}';
+            var username = '{{ user.username }}';
+            var avatar = '{{ user.avatar }}';
+        } else {
+            li.className = "left";
+            var first_name = '{{ convers.first_name }}';
+            var last_name = '{{ convers.last_name }}';
+            var username = '{{ convers.username }}';
+            var avatar = '{{ convers.avatar }}';
+        }
+        li.innerHTML = "" +
+            "<a><img class=\"avatar\" alt=\"" +
+            username + "\" src=\"/media/" + avatar + "\"></a>\n" +
+            "<span class=\"message\"><span class=\"arrow\"></span>\n" +
+            "<a><span class=\"from\"><strong>" +
+            first_name + " " + last_name + "</strong></span></a>\n" +
+            "<span class=\"text time\"><strong>" + pub_date + "</strong></span>\n" +
+            "<span class=\"text\">\n" +
+            message +
+            "</span>\n" +
+            "</span>"
+        chatLogDom.appendChild(li);
     };
 
     chatSocket.onclose = function(e) {
@@ -33,7 +108,7 @@
         var messageInputDom = document.querySelector('#chat-message-input');
         var message = messageInputDom.value;
         chatSocket.send(JSON.stringify({
-            'message': message
+            'message': message,
         }));
 
         messageInputDom.value = '';

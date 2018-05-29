@@ -24,7 +24,8 @@
 							<a href="#" class="btn-close"><i class="halflings-icon white remove"></i></a>
 						</div>
 					</div>
-                <div class="box-content">
+                    {% if user == current_page_user %}
+                    <div class="box-content">
 						<table class="table table-striped table-bordered bootstrap-datatable datatable">
 						  <thead>
 							  <tr>
@@ -60,7 +61,8 @@
 						  </tbody>
 					  </table>
 					</div>
-					<div class="box-content">
+                    {% endif %}
+                    <div class="box-content">
 						<table class="table table-striped table-bordered bootstrap-datatable datatable">
 						  <thead>
 							  <tr>

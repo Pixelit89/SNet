@@ -4,11 +4,79 @@ from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
 from django.http import HttpResponseRedirect
 from django.utils.safestring import mark_safe
-from django.views.generic import DetailView, FormView, TemplateView
-from .forms import LoginForm, RegistrationForm, EditForm
-from .models import ExtendedUser
+from django.views.generic import DetailView, FormView, TemplateView, ListView, RedirectView, UpdateView
+from django.core.exceptions import ObjectDoesNotExist
+from .forms import LoginForm, RegistrationForm, EditForm, UploadPicForm
+from .models import ExtendedUser, ChatGroups, Gallery, FriendsRequest, Wall, ChatMessages
+
 import json
 # Create your views here.
+
+
+class IndexView(LoginRequiredMixin, DetailView):
+    template_name = "index.html"
+    model = ExtendedUser
+    login_url = '/login'
+    redirect_field_name = ''
+
+    def get_context_data(self, **kwargs):
+        context = super(IndexView, self).get_context_data(**kwargs)
+        current_page_user = ExtendedUser.objects.get(id=int(self.kwargs['pk']))
+        user = ExtendedUser.objects.get(id=self.request.session['id'])
+        friends_requests = FriendsRequest.objects.filter(user_id=self.request.session['id'])
+        gallery = Gallery.objects.filter(user_id=current_page_user.id)
+        wall = Wall.objects.filter(wall_owner=current_page_user.id)
+        context['user'] = user
+        context['current_page_user'] = current_page_user
+        context['groups'] = user.chatgroups_set.all()
+        context['friends_requests'] = friends_requests
+        context['friends_requests_users'] = []
+        context['friends'] = context['current_page_user'].friends.all()
+        context['gallery'] = gallery
+        context['wall'] = wall.order_by('-pub_date')
+        for i in friends_requests:
+            context['friends_requests_users'].append(ExtendedUser.objects.get(id=i.friend_request))
+        try:
+            context['is_friend'] = user.friends.get(id=current_page_user.id)
+        except ExtendedUser.DoesNotExist:
+            context['is_friend'] = None
+        return context
+
+
+class EditProfileView(IndexView, FormView):
+    template_name = 'edit_profile.html'
+    form_class = EditForm
+
+
+class FriendsView(IndexView):
+    template_name = 'friends_list.html'
+
+
+class GalleryView(IndexView):
+    template_name = 'gallery.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(GalleryView, self).get_context_data(**kwargs)
+        context['form'] = UploadPicForm
+        return context
+
+
+class ConversationsList(IndexView):
+    template_name = 'chat/messages.html'
+
+
+class LoginView(FormView):
+    template_name = "login.html"
+    form_class = LoginForm
+
+
+class RegistrationView(FormView):
+    template_name = "registration.html"
+    form_class = RegistrationForm
+
+
+class Redirect(RedirectView):
+    url = 'login'
 
 
 def logging_in(request):
@@ -42,84 +110,98 @@ def registration(request):
         return HttpResponseRedirect(reverse_lazy('registration'))
 
 
-class IndexView(LoginRequiredMixin, DetailView):
-    template_name = "index.html"
-    model = ExtendedUser
-    login_url = '/login'
-    redirect_field_name = ''
-
-    def get_context_data(self, **kwargs):
-        context = super(IndexView, self).get_context_data(**kwargs)
-        context['current_page_id'] = self.kwargs['pk']
-        friend = ExtendedUser.objects.get(id=int(self.kwargs['pk']))
-        user = ExtendedUser.objects.get(id=self.request.session['id'])
-        context['avatar'] = friend.avatar
-        context['friends'] = friend.friends.all()
-        try:
-            context['is_friend'] = user.friends.get(id=friend.id)
-        except ExtendedUser.DoesNotExist:
-            context['is_friend'] = None
-        return context
-
-
-class LoginView(FormView):
-    template_name = "login.html"
-    form_class = LoginForm
-
-
-class RegistrationView(FormView):
-    template_name = "registration.html"
-    form_class = RegistrationForm
-
-
-class EditProfileView(LoginRequiredMixin, FormView):
-    login_url = "/login"
-    redirect_field_name = ''
-    template_name = 'edit_profile.html'
-    form_class = EditForm
-
-
-def update_profile(request):
+def update_profile(request, pk):
     user = ExtendedUser.objects.get(id=request.session['id'])
-    user.avatar = request.FILES['avatar']
+    if not request.POST['username'] == '':
+        user.username = request.POST['username']
+    if not request.POST['first_name'] == '':
+        user.first_name = request.POST['first_name']
+    if not request.POST['last_name'] == '':
+        user.last_name = request.POST['last_name']
+    if not request.POST['email'] == '':
+        user.email = request.POST['email']
+    if not request.FILES['avatar'] == '':
+        user.avatar = request.FILES['avatar']
+    if not request.POST['password'] == '':
+        if request.POST['password'] == request.POST['confirm_password']:
+            user.set_password(request.POST['password'])
+        else:
+            return HttpResponseRedirect(reverse_lazy('edit_profile', args=(pk,)))
     user.save()
-    return HttpResponseRedirect(reverse_lazy('index', kwargs={'current_page_id': request.session['id']}))
+    return HttpResponseRedirect(reverse_lazy('edit_profile', args=(pk, )))
 
 
-def add_friend(request, current_page_id):
+def friends_request(request, current_page_id):
     user = ExtendedUser.objects.get(id=request.session['id'])
-    print(current_page_id)
-    friend = ExtendedUser.objects.get(id=int(current_page_id))
+    current_page_user = ExtendedUser.objects.get(id=current_page_id)
+
+    try:
+        FriendsRequest.objects.get(user_id=int(current_page_id),
+                                                        friend_request=request.session['id'])
+        return HttpResponseRedirect(reverse_lazy('index', kwargs={'pk': current_page_id}))
+    except ObjectDoesNotExist:
+        if current_page_user in user.friends.all():
+            return HttpResponseRedirect(reverse_lazy('index', kwargs={'pk': current_page_id}))
+        else:
+            friends_request = FriendsRequest.objects.create(user_id=int(current_page_id),
+                                                            friend_request=request.session['id'])
+            friends_request.save()
+            return HttpResponseRedirect(reverse_lazy('index', kwargs={'pk': current_page_id}))
+
+
+def accept_friend(request, friend_request_id):
+    friends_request = FriendsRequest.objects.get(friend_request=friend_request_id, user_id=request.session['id'])
+    user = ExtendedUser.objects.get(id=request.session['id'])
+    friend = ExtendedUser.objects.get(id=friend_request_id)
     user.friends.add(friend)
-    return HttpResponseRedirect(reverse_lazy('index', kwargs={'pk': current_page_id}))
+    friends_request.delete()
+    return HttpResponseRedirect(reverse_lazy('friends', kwargs={'pk': user.id}))
 
 
 def remove_friend(request, current_page_id):
     user = ExtendedUser.objects.get(id=request.session['id'])
-    print(current_page_id)
     friend = ExtendedUser.objects.get(id=current_page_id)
     user.friends.remove(friend)
     return HttpResponseRedirect(reverse_lazy('index', kwargs={'pk': current_page_id}))
 
 
-class FriendsView(LoginRequiredMixin, TemplateView):
-    login_url = "/login"
-    redirect_field_name = ''
-    template_name = 'friends_list.html'
+def upload_pic(request):
+    user = ExtendedUser.objects.get(id=request.session['id'])
+    gallery = Gallery.objects.create(pic=request.FILES['pic'], user_id=request.session['id'])
+    gallery.save()
+    return HttpResponseRedirect(reverse_lazy('gallery', kwargs={'pk': user.id}))
+
+
+class RoomView(IndexView):
+    template_name = 'chat/room.html'
 
     def get_context_data(self, **kwargs):
-        context = super(FriendsView, self).get_context_data(**kwargs)
-        user = ExtendedUser.objects.get(id=self.request.session['id'])
-        context['friends'] = user.friends.all()
-        print(context)
+        context = super(RoomView, self).get_context_data(**kwargs)
+        group = ChatGroups.objects.get(name=self.kwargs['group'])
+        history = ChatMessages.objects.filter(chat_room=group).order_by('-pub_date')[:10]
+        convers = group.users.exclude(id=context['user'].id)
+        if len(convers) == 1:
+            context['convers'] = convers[0]
+        context['history'] = history
+        context['group_json'] = mark_safe(json.dumps(group.name))
         return context
 
 
-def index(request):
-    return render(request, 'chat/index.html', {})
-
-
-def room(request, room_name):
+def room(request, group):
+    request.encoding = 'utf-8'
+    user = ExtendedUser.objects.get(id=request.session['id'])
     return render(request, 'chat/room.html', {
-        'room_name_json': mark_safe(json.dumps(room_name))
+        'group_json': mark_safe(json.dumps(group)),
+        'user': user,
+        'current_page_user': user
     })
+
+
+def add_wall_message(request, pk):
+    new_message = Wall.objects.create(
+        wall_owner=pk,
+        message=request.POST['message'],
+        author=ExtendedUser.objects.get(id=request.session['id'])
+        )
+    new_message.save()
+    return HttpResponseRedirect(reverse_lazy('index', args=(pk, )))

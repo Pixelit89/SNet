@@ -8,10 +8,10 @@
 			<ul class="breadcrumb">
 				<li>
 					<i class="icon-home"></i>
-					<a href="index.html">Home</a> 
+					<a href="{% url 'index' current_page_user.id %}">Home</a>
 					<i class="icon-angle-right"></i>
 				</li>
-				<li><a href="#">Messages</a></li>
+				<li><a href="{% url 'messages' user.id %}">Messages</a></li>
 			</ul>
 
 			<div class="row-fluid">
