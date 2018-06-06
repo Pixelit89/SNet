@@ -1,5 +1,6 @@
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
 from django.http import HttpResponseRedirect
@@ -7,9 +8,11 @@ from django.utils.safestring import mark_safe
 from django.views.generic import DetailView, FormView, TemplateView, ListView, RedirectView, UpdateView
 from django.core.exceptions import ObjectDoesNotExist
 from .forms import LoginForm, RegistrationForm, EditForm, UploadPicForm
-from .models import ExtendedUser, ChatGroups, Gallery, FriendsRequest, Wall, ChatMessages
+from .models import ExtendedUser, ChatGroups, Gallery, FriendsRequest, Wall, ChatMessages, LastSeen
 
 import json
+
+
 # Create your views here.
 
 
@@ -64,6 +67,19 @@ class GalleryView(IndexView):
 class ConversationsList(IndexView):
     template_name = 'chat/messages.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(ConversationsList, self).get_context_data(**kwargs)
+        context['last_messages'] = []
+        for group in context['groups']:
+            try:
+                last_seen = group.lastseen_set.get(user_id=context['user'].id).last_seen
+                message = group.chatmessages_set.latest('pub_date')
+                conv = message.chat_room.users.exclude(id=context['user'].id)[0]
+                context['last_messages'].append([message, last_seen, conv])
+            except ObjectDoesNotExist:
+                group.delete()
+        return context
+
 
 class LoginView(FormView):
     template_name = "login.html"
@@ -77,6 +93,32 @@ class RegistrationView(FormView):
 
 class Redirect(RedirectView):
     url = 'login'
+
+
+class SearchView(IndexView):
+    template_name = 'search_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(SearchView, self).get_context_data(**kwargs)
+        founded = self.request.session['founded']
+        del self.request.session['founded']
+        context['founded'] = [ExtendedUser.objects.get(id=x) for x in founded]
+        return context
+
+
+class RoomView(IndexView):
+    template_name = 'chat/room.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(RoomView, self).get_context_data(**kwargs)
+        group = ChatGroups.objects.get(name=self.kwargs['group'])
+        history = ChatMessages.objects.filter(chat_room=group).order_by('-pub_date')[:10]
+        convers = group.users.exclude(id=context['user'].id)
+        if len(convers) == 1:
+            context['convers'] = convers[0]
+        context['history'] = reversed(history)
+        context['group_json'] = mark_safe(json.dumps(group.name))
+        return context
 
 
 def logging_in(request):
@@ -128,7 +170,7 @@ def update_profile(request, pk):
         else:
             return HttpResponseRedirect(reverse_lazy('edit_profile', args=(pk,)))
     user.save()
-    return HttpResponseRedirect(reverse_lazy('edit_profile', args=(pk, )))
+    return HttpResponseRedirect(reverse_lazy('edit_profile', args=(pk,)))
 
 
 def friends_request(request, current_page_id):
@@ -137,7 +179,7 @@ def friends_request(request, current_page_id):
 
     try:
         FriendsRequest.objects.get(user_id=int(current_page_id),
-                                                        friend_request=request.session['id'])
+                                   friend_request=request.session['id'])
         return HttpResponseRedirect(reverse_lazy('index', kwargs={'pk': current_page_id}))
     except ObjectDoesNotExist:
         if current_page_user in user.friends.all():
@@ -172,36 +214,57 @@ def upload_pic(request):
     return HttpResponseRedirect(reverse_lazy('gallery', kwargs={'pk': user.id}))
 
 
-class RoomView(IndexView):
-    template_name = 'chat/room.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(RoomView, self).get_context_data(**kwargs)
-        group = ChatGroups.objects.get(name=self.kwargs['group'])
-        history = ChatMessages.objects.filter(chat_room=group).order_by('-pub_date')[:10]
-        convers = group.users.exclude(id=context['user'].id)
-        if len(convers) == 1:
-            context['convers'] = convers[0]
-        context['history'] = history
-        context['group_json'] = mark_safe(json.dumps(group.name))
-        return context
-
-
-def room(request, group):
-    request.encoding = 'utf-8'
-    user = ExtendedUser.objects.get(id=request.session['id'])
-    return render(request, 'chat/room.html', {
-        'group_json': mark_safe(json.dumps(group)),
-        'user': user,
-        'current_page_user': user
-    })
-
-
 def add_wall_message(request, pk):
     new_message = Wall.objects.create(
         wall_owner=pk,
         message=request.POST['message'],
         author=ExtendedUser.objects.get(id=request.session['id'])
-        )
+    )
     new_message.save()
-    return HttpResponseRedirect(reverse_lazy('index', args=(pk, )))
+    return HttpResponseRedirect(reverse_lazy('index', args=(pk,)))
+
+
+def start_chat(request, user_id, current_page_id):
+    user = ExtendedUser.objects.get(id=user_id)
+    current_page_user = ExtendedUser.objects.get(id=current_page_id)
+    group_names = ["{}_{}".format(user_id, current_page_id), "{}_{}".format(current_page_id, user_id)]
+    for name in group_names:
+        try:
+            group = ChatGroups.objects.get(name=name)
+            return HttpResponseRedirect(reverse_lazy('room', args=(user_id, group.name,)))
+        except ObjectDoesNotExist:
+            pass
+    group = ChatGroups.objects.create(name=group_names[0])
+    group.users.add(user)
+    group.users.add(current_page_user)
+    group.save()
+    last_seen_1 = LastSeen.objects.create(group=group, user_id=user)
+    last_seen_2 = LastSeen.objects.create(group=group, user_id=current_page_user)
+    last_seen_1.save()
+    last_seen_2.save()
+    return HttpResponseRedirect(reverse_lazy('room', args=(user_id, group.name,)))
+
+
+def search(request):
+    search_item = request.POST['search_item']
+    if search_item == '':
+        return HttpResponseRedirect(reverse_lazy('index', args=(request.session['id'], )))
+    cleared_item = search_item.strip()
+    results = []
+    try:
+        founded = ExtendedUser.objects.filter(last_name__icontains=cleared_item).values_list('id', flat=True)
+        results.extend(list(founded))
+    except ObjectDoesNotExist:
+        pass
+    try:
+        founded = ExtendedUser.objects.filter(first_name__icontains=cleared_item).values_list('id', flat=True)
+        results.extend(list(founded))
+    except ObjectDoesNotExist:
+        pass
+    try:
+        founded = ExtendedUser.objects.filter(username__icontains=cleared_item).values_list('id', flat=True)
+        results.extend(list(founded))
+    except ObjectDoesNotExist:
+        pass
+    request.session['founded'] = list(set(results))
+    return HttpResponseRedirect(reverse_lazy('search_view', args=(request.session['id'], )))

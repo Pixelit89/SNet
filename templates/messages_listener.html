@@ -1,10 +1,7 @@
 <script>
 
-    {% for group in groups %}
-    var group = '{{ group }}';
     var chatSocket_group = new WebSocket(
-        'ws://' + window.location.host +
-        '/ws/chat/' + group + '/');
+        'ws://' + window.location.host + '/ws/chat/listener/');
     chatSocket_group.onmessage = function(e) {
         console.log('Got new message!');
         var mess_elem = document.getElementById('new_message');
@@ -18,10 +15,9 @@
             var messages = document.getElementById("messages");
             messages.appendChild(elem);
         }
-    }
+    };
 
     chatSocket_group.onclose = function(e) {
         console.error('Chat socket closed unexpectedly');
     };
-    {% endfor %}
 </script>

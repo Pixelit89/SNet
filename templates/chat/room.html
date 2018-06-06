@@ -22,7 +22,7 @@
                         <a href="{% url 'index' item.user_id %}"><img class="avatar" alt="{{ item.user.username }}" src="/media/{{ item.user.avatar }}"></a>
                         <span class="message"><span class="arrow"></span>
                             <a href="{% url 'index' item.user_id %}"><span class="from"><strong>{{ item.user.first_name }} {{ item.user.last_name }}</strong></span></a>
-                            <span class="text time"><strong>{{ item.pub_date }}</strong></span>
+                            <span class="text time"><strong>{{ item.pub_date|date:"H:i d-M-y" }}</strong></span>
                             <span class="text">
                                 {{ item.message }}
                             </span>

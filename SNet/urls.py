@@ -43,7 +43,10 @@ urlpatterns = [
     re_path(r'^id_(?P<pk>[0-9])/chat$', views.ConversationsList.as_view(), name="messages"),
     re_path(r'^id_(?P<pk>[0-9])/gallery$', views.GalleryView.as_view(), name="gallery"),
     re_path(r'^id_(?P<pk>[0-9])/wall_post$', views.add_wall_message, name="wall_post"),
+    re_path(r'^id_(?P<pk>[0-9])/search$', views.SearchView.as_view(), name="search_view"),
+    re_path(r'^search$', views.search, name="search"),
     re_path(r'^upload_pic$', views.upload_pic, name='upload_pic'),
     re_path(r'^id_(?P<pk>[0-9])/chat/(?P<group>[_0-9]+)/$', views.RoomView.as_view(), name='room'),
+    re_path(r'^start_chat_(?P<user_id>[0-9])_(?P<current_page_id>[0-9])$', views.start_chat, name='start_chat'),
     path('admin/', admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

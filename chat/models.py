@@ -21,7 +21,7 @@ class FriendsRequest(models.Model):
 
 
 class ChatGroups(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     users = models.ManyToManyField(ExtendedUser, related_name=None)
 
     def __str__(self):
@@ -45,7 +45,16 @@ class ChatMessages(models.Model):
     user = models.ForeignKey(ExtendedUser, on_delete=models.CASCADE)
     message = models.TextField()
     pub_date = models.DateTimeField(auto_now_add=True)
-    chat_room = models.ForeignKey(ChatGroups, on_delete=models.CASCADE)
+    chat_room = models.ForeignKey(ChatGroups, to_field='name', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.user.username
+
+
+class LastSeen(models.Model):
+    group = models.ForeignKey(ChatGroups, to_field='name', on_delete=models.CASCADE)
+    user_id = models.IntegerField()
+    last_seen = models.DateTimeField()
+
+    def __str__(self):
+        return self.last_seen.strftime("%d-%b-%Y %H:%M:%S")
