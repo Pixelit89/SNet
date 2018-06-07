@@ -18,7 +18,7 @@
 				<div class="box span10" onTablet="span12">
                     <div class="box-content">
                         <table style="width: 100%;">
-                            <tbody>
+                            <tbody id="conv_list">
                             {% for message, last_seen, conv in last_messages %}
                                 <tr>
                                 <td>
@@ -35,14 +35,14 @@
                                         </span>
                                     </a>
                                 </td>
-                                <td class="center message {{ conv.id }}" width="60%" {% if last_seen < message.pub_date %}style="background-color: #DEEFFF; padding: 5px; border-radius: 3px"{% endif %} >
+                                <td class="message {{ conv.id }}" width="60%" {% if last_seen < message.pub_date %}style="background-color: #DEEFFF; padding: 5px; border-radius: 3px"{% endif %} >
                                     <a href="{% url "room" user.id message.chat_room.name %}">
                                         <span style="display: block;">
                                             {{ message.message }}
                                         </span>
                                     </a>
                                 </td>
-                                <td style="" class="center date {{ conv.id }}">{{ message.pub_date|date:"H:i d-M-y" }}</td>
+                                <td style="" class="date {{ conv.id }}">{{ message.pub_date|date:"H:i d-M-y" }}</td>
                             </tr>
                             {% endfor %}
                             </tbody>
@@ -51,7 +51,7 @@
 				</div>
 
 			</div>
-			
+
        
 
 	</div><!--/.fluid-container-->
@@ -81,7 +81,7 @@
     chatSocket_group.onmessage = function(e) {
         console.log('Got new message!');
         var mess_elem = document.getElementById('new_message');
-        if (typeof mess_elem == 'undefined' || mess_elem == null) {
+        if (typeof mess_elem == undefined || mess_elem == null) {
             var elem = document.createElement('span');
             elem.id = 'new_message';
             elem.innerText = 'new!';
@@ -91,8 +91,38 @@
             messages.appendChild(elem);
         };
         var data = JSON.parse(e.data);
-        var new_message_elem = document.getElementsByClassName('center message ' + data['user_id'])[0];
-        var new_date_elem = document.getElementsByClassName('center date ' + data['user_id'])[0];
+        var new_message_elem = document.getElementsByClassName('message ' + data['user_id'])[0];
+        var new_date_elem = document.getElementsByClassName('date ' + data['user_id'])[0];
+        {#var new_message_elem = document.getElementsByClassName('center message ' + data['user_id'])[0];#}
+        {#var new_date_elem = document.getElementsByClassName('center date ' + data['user_id'])[0];#}
+        var a = document.getElementsByClassName('asda')[0];
+        console.log(new_date_elem);
+        console.log(new_date_elem);
+        if (new_message_elem == undefined){
+            console.log('passed');
+            var new_row = document.createElement('tr');
+            var new_avatar_elem = document.createElement('td');
+            var new_name_elem = document.createElement('td');
+            var table = document.getElementById('conv_list');
+            var rows = document.getElementsByTagName('tr');
+            new_avatar_elem.innerHTML = '' +
+                '<a href="id_' + data['user_id'] + '/">\n' +
+                '<span style="display: block;">' +
+                '<img class="img-circle" style="max-width: 46px; max-height: 52px;" src="/media/' + data['avatar'] + ' />' +
+                '</span>' +
+                '</a>';
+            new_name_elem.innerHTML = '<a href="{% url "index" user.id %}">\n' +
+                '<span style="display: block;">\n' +
+                data['first_name'] + ' ' + data['last_name'] +
+                '</span>\n' +
+                '</a>'
+            new_row.appendChild(new_avatar_elem);
+            new_row.appendChild(new_name_elem);
+            new_row.appendChild(new_message_elem);
+            new_row.appendChild(new_date_elem);
+            table.insertBefore(new_row, rows[0]);
+        }
+
         new_message_elem.style.backgroudColor = "#DEEFFF;";
         new_message_elem.style.padding = "5px";
         new_message_elem.style.borderRadius = "3px";

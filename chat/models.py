@@ -54,7 +54,7 @@ class ChatMessages(models.Model):
 class LastSeen(models.Model):
     group = models.ForeignKey(ChatGroups, to_field='name', on_delete=models.CASCADE)
     user_id = models.IntegerField()
-    last_seen = models.DateTimeField()
+    last_seen = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.last_seen.strftime("%d-%b-%Y %H:%M:%S")

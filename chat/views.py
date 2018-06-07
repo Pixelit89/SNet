@@ -118,6 +118,14 @@ class RoomView(IndexView):
             context['convers'] = convers[0]
         context['history'] = reversed(history)
         context['group_json'] = mark_safe(json.dumps(group.name))
+        conv = group.users.exclude(id=context['user'].id)[0]
+        try:
+            LastSeen.objects.get(group=group, user_id=conv.id)
+        except ObjectDoesNotExist:
+            last_seen_1 = LastSeen.objects.create(group=group, user_id=context['user'].id)
+            last_seen_2 = LastSeen.objects.create(group=group, user_id=conv.id)
+            last_seen_1.save()
+            last_seen_2.save()
         return context
 
 
@@ -238,10 +246,6 @@ def start_chat(request, user_id, current_page_id):
     group.users.add(user)
     group.users.add(current_page_user)
     group.save()
-    last_seen_1 = LastSeen.objects.create(group=group, user_id=user)
-    last_seen_2 = LastSeen.objects.create(group=group, user_id=current_page_user)
-    last_seen_1.save()
-    last_seen_2.save()
     return HttpResponseRedirect(reverse_lazy('room', args=(user_id, group.name,)))
 
 

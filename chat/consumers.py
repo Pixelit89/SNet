@@ -35,6 +35,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
+        avatar = text_data_json['avatar']
         user_id = self.scope['user'].id
         await database_sync_to_async(self.message_management)(param='store', message=message)
         # Send message to room group
@@ -45,7 +46,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'message': message,
                 'user_id': user_id,
                 'group': self.group.name,
-                'pub_date': datetime.now().strftime("%H:%M %d-%b-%y")
+                'pub_date': datetime.now().strftime("%H:%M %d-%b-%y"),
+                'avatar': avatar,
+                'first_name': self.scope['user'].first_name,
+                'last_name': self.scope['user'].last_name
             }
         )
 

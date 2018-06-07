@@ -109,6 +109,7 @@
         var message = messageInputDom.value;
         chatSocket.send(JSON.stringify({
             'message': message,
+            'avatar': '{{ user.avatar }}'
         }));
 
         messageInputDom.value = '';
