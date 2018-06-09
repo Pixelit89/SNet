@@ -28,7 +28,7 @@ SECRET_KEY = 'j4vyl$w3b_5tvwv6*@eu2ktf-7ffk@ej9qx*fb8-%y^nk!__!f'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.100.5', '93.84.26.81', '192.168.100.51']
+ALLOWED_HOSTS = []
 
 CACHES = {
     "default": {
@@ -87,7 +87,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('127.0.0.1', 6379)],
+            "hosts": [('redis://h:pb2d334cc41d61b6b8d2b55df357f259640538638ed1ecb50972d86c77fb62c1c@ec2-34-248-171-42.eu-west-1.compute.amazonaws.com:11389', 6379)],
         },
     },
 }
@@ -99,7 +99,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'SNet',
-        'HOST': '127.0.0.1',
+        'HOST': 'postgres://jwyvxvgdvnetvw:a29090969fee9782e70e65c3a7c2aa7cec7f1f54675f47091d8f696fc7a2c8ab@ec2-54-228-181-43.eu-west-1.compute.amazonaws.com:5432/da5pjub8do106l',
         'PORT': '5432',
         'PASSWORD': 'pass'
     }
