@@ -1,5 +1,6 @@
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import ProgrammingError
 from django.db.models import Q
 from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
@@ -37,8 +38,11 @@ class IndexView(LoginRequiredMixin, DetailView):
         context['friends'] = context['current_page_user'].friends.all()
         context['gallery'] = gallery
         context['wall'] = wall.order_by('-pub_date')
-        for i in friends_requests:
-            context['friends_requests_users'].append(ExtendedUser.objects.get(id=i.friend_request))
+        try:
+            for i in friends_requests:
+                context['friends_requests_users'].append(ExtendedUser.objects.get(id=i.friend_request))
+        except ProgrammingError:
+            pass
         try:
             context['is_friend'] = user.friends.get(id=current_page_user.id)
         except ExtendedUser.DoesNotExist:
