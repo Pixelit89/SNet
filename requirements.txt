@@ -9,7 +9,7 @@ Automat==0.6.0
 certifi==2018.1.18
 cffi==1.11.5
 channels==2.1.1
-channels-redis==2.1.1
+channels-redis==2.2.1
 chardet==3.0.4
 constantly==15.1.0
 cryptography==2.2.2
