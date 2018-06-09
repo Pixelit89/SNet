@@ -30,7 +30,7 @@ class IndexView(LoginRequiredMixin, DetailView):
         try:
             friends_requests = FriendsRequest.objects.filter(user_id=self.request.session['id'])
         except ProgrammingError:
-            friends_requests = False
+            friends_requests = 0
         gallery = Gallery.objects.filter(user_id=current_page_user.id)
         wall = Wall.objects.filter(wall_owner=current_page_user.id)
         context['user'] = user
