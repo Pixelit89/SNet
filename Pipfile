@@ -1,0 +1,44 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[requires]
+python_version = "3.5"
+
+[dev-packages]
+
+[packages]
+asgiref = "==2.2.0"
+async-timeout = "==2.0.1"
+attrs = "==17.4.0"
+autobahn = "==18.4.1"
+automat = "==0.6.0"
+certifi = "==2018.1.18"
+channels = "==2.0.2"
+chardet = "==3.0.4"
+constantly = "==15.1.0"
+daphne = "==2.1.0"
+django = "==2.0.4"
+django-channels = "==0.7.0"
+extras = "==1.0.0"
+"httplib2" = "==0.11.3"
+hyperlink = "==18.0.0"
+idna = "==2.6"
+incremental = "==17.5.0"
+oauthlib = "==2.0.7"
+pillow = "==5.1.0"
+"psycopg2" = "==2.7.4"
+"psycopg2-binary" = "==2.7.4"
+pytz = "==2018.4"
+redis = "==2.10.6"
+requests = "==2.18.4"
+requests-oauthlib = "==0.8.0"
+six = "==1.11.0"
+twisted = "==17.9.0"
+txaio = "==2.10.0"
+"urllib3" = "==1.22"
+"zope.interface" = "==4.4.3"
+gunicorn = "*"
+django-heroku = "*"
+whitenoise = "*"
