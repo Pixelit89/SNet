@@ -84,10 +84,10 @@ WSGI_APPLICATION = 'SNet.wsgi.application'
 ASGI_APPLICATION = "SNet.routing.application"
 
 CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [('redis://h:pb2d334cc41d61b6b8d2b55df357f259640538638ed1ecb50972d86c77fb62c1c@ec2-34-248-171-42.eu-west-1.compute.amazonaws.com:11389', 6379)],
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("localhost", 6379)],
         },
     },
 }
