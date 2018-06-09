@@ -27,7 +27,10 @@ class IndexView(LoginRequiredMixin, DetailView):
         context = super(IndexView, self).get_context_data(**kwargs)
         current_page_user = ExtendedUser.objects.get(id=int(self.kwargs['pk']))
         user = ExtendedUser.objects.get(id=self.request.session['id'])
-        friends_requests = FriendsRequest.objects.filter(user_id=self.request.session['id'])
+        try:
+            friends_requests = FriendsRequest.objects.filter(user_id=self.request.session['id'])
+        except ProgrammingError:
+            friends_requests = False
         gallery = Gallery.objects.filter(user_id=current_page_user.id)
         wall = Wall.objects.filter(wall_owner=current_page_user.id)
         context['user'] = user
