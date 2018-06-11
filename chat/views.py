@@ -92,12 +92,11 @@ class LoginView(FormView):
     template_name = "login.html"
     form_class = LoginForm
 
-    def get_context_data(self, **kwargs):
-        context = super(LoginView, self).get_context_data(**kwargs)
+    def get(self, request, *args, **kwargs):
         try:
             return HttpResponseRedirect(reverse_lazy('index', args=(self.request.session['id'], )))
         except Exception:
-            return context
+            return super(LoginView, self).get(request, *args, **kwargs)
 
 
 
