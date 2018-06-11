@@ -4,12 +4,11 @@
 		<div class="row-fluid">
 					
 			<div class="row-fluid">
-				<div class="login-box">
+				<div class="login-box" style="width: 250px;">
 					<div class="icons">
-						<a href="index.html"><i class="halflings-icon home"></i></a>
-						<a href="#"><i class="halflings-icon cog"></i></a>
+						<a href="{% url 'login' %}"><button class="btn btn-mini">Login page</button></a>
 					</div>
-					<h2>Register a new account</h2>
+					<h2 class="align-center" style="font-family: 'Open Sans', sans-serif;">Register a new account</h2>
 					<form class="form-horizontal" action="{% url 'register' %}" method="post">
 						{% csrf_token %}
                         <fieldset>
@@ -19,17 +18,17 @@
 								{{ form.username }}
 							</div>
 							<div class="clearfix"></div>
-                            <div class="input-prepend" title="Username">
+                            <div class="input-prepend" title="First name">
 								<span class="add-on"><i class="halflings-icon user"></i></span>
 								{{ form.first_name }}
 							</div>
 							<div class="clearfix"></div>
-                            <div class="input-prepend" title="Username">
+                            <div class="input-prepend" title="Last name">
 								<span class="add-on"><i class="halflings-icon user"></i></span>
 								{{ form.last_name }}
 							</div>
 							<div class="clearfix"></div>
-                            <div class="input-prepend" title="Username">
+                            <div class="input-prepend" title="E-mail">
 								<span class="add-on"><i class="halflings-icon user"></i></span>
 								{{ form.email }}
 							</div>
@@ -39,12 +38,12 @@
                                 {{ form.password }}
 							</div>
 							<div class="clearfix"></div>
-							<div class="input-prepend" title="Password">
+							<div class="input-prepend" title="Confirm password">
 								<span class="add-on"><i class="halflings-icon lock"></i></span>
 								<input class="input-large span10" name="confirm_password" id="id_confirm_password" type="password" placeholder="confirm password"/>
 							</div>
                             <div class="clearfix"></div>
-							<div class="button-login">	
+							<div class="span12 text-center">
 								<button type="submit" class="btn btn-primary">Register</button>
 							</div>
 							<div class="clearfix"></div>

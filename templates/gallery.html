@@ -14,30 +14,20 @@
 				<li><a href="{% url 'gallery' current_page_user.id %}">Gallery</a></li>
 			</ul>
             {% if user == current_page_user %}
-            <div class="row-fluid sortable ui-sortable">
+            <div class="row-fluid">
 				<div class="box span12">
-					<div class="box-header" data-original-title="">
-						<h2><i class="halflings-icon white edit"></i><span class="break"></span>Form Elements</h2>
-						<div class="box-icon">
-							<a href="#" class="btn-setting"><i class="halflings-icon white wrench"></i></a>
-							<a href="#" class="btn-minimize"><i class="halflings-icon white chevron-up"></i></a>
-							<a href="#" class="btn-close"><i class="halflings-icon white remove"></i></a>
-						</div>
-					</div>
 					<div class="box-content">
-						<form class="form-horizontal" method="post" action="{% url 'upload_pic' %}" enctype="multipart/form-data">
+						<form class="form-horizontal" style="margin: 0" method="post" action="{% url 'upload_pic' %}" enctype="multipart/form-data">
                             {% csrf_token %}
 						  <fieldset>
-							<div class="control-group">
+							<div class="">
 							  <label class="control-label" for="fileInput">File input</label>
 							  <div class="controls">
 								<div class="uploader" id="uniform-fileInput">
                                     {{ form.pic }}
-							  </div>
-							</div>
-							<div class="form-actions">
-							  <button type="submit" class="btn btn-primary">Upload a photo</button>
-							  <button type="reset" class="btn">Cancel</button>
+							    </div>
+                                <button type="submit" class="btn btn-primary">Upload a photo</button>
+							    <button type="reset" class="btn">Cancel</button>
 							</div>
 						  </fieldset>
 						</form>
@@ -45,15 +35,12 @@
 				</div><!--/span-->
             </div>
             {% endif %}
-			<div class="row-fluid sortable">
+			<div class="row-fluid">
 				<div class="box span12">
 					<div class="box-header" data-original-title>
-						<h2><i class="halflings-icon white picture"></i><span class="break"></span> Gallery</h2>
+                        <h2>Gallery</h2>
 						<div class="box-icon">
 							<a href="#" id="toggle-fullscreen" class="hidden-phone hidden-tablet"><i class="halflings-icon white fullscreen"></i></a>
-							<a href="#" class="btn-setting"><i class="halflings-icon white wrench"></i></a>
-							<a href="#" class="btn-minimize"><i class="halflings-icon white chevron-up"></i></a>
-							<a href="#" class="btn-close"><i class="halflings-icon white remove"></i></a>
 						</div>
 					</div>
 					<div class="box-content">

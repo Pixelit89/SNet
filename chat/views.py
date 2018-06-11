@@ -92,6 +92,14 @@ class LoginView(FormView):
     template_name = "login.html"
     form_class = LoginForm
 
+    def get_context_data(self, **kwargs):
+        context = super(LoginView, self).get_context_data(**kwargs)
+        try:
+            return HttpResponseRedirect(reverse_lazy('index', args=(self.request.session['id'], )))
+        except Exception:
+            return context
+
+
 
 class RegistrationView(FormView):
     template_name = "registration.html"

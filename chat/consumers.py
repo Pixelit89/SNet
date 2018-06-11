@@ -103,10 +103,6 @@ class ListenerConsumer(AsyncWebsocketConsumer):
                 await self.send(text_data="text")
                 break
 
-
-
-
-
     async def disconnect(self, close_code):
         for group in self.groups:
             await self.channel_layer.group_discard(

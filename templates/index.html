@@ -4,13 +4,7 @@
 			
 			<!-- start: Content -->
 			<div id="content" class="span10">
-			{% if current_page_user.id != user.id %}
-			    {% if is_friend %}
-                    <a href="{% url 'remove_friend' current_page_user.id %}">Remove from friendslist</a>
-                {% else %}
-                    <a href="{% url 'friends_request' current_page_user.id %}">Add to friendslist</a>
-                {% endif %}
-            {% endif %}
+
 			<ul class="breadcrumb">
 				<li>
 					<i class="icon-home"></i>
@@ -40,6 +34,17 @@
                         <p>
                             <a href="{% url 'start_chat' user.id current_page_user.id %}" id="chat-message-submit" class="btn btn-info">Write a message</a>
                         </p>
+                        {% if current_page_user.id != user.id %}
+			                {% if is_friend %}
+                                <a class="btn btn-danger" href="{% url 'remove_friend' current_page_user.id %}">
+                                    <i class="halflings-icon white minus"></i>
+                                </a>
+                            {% else %}
+                                <a class="btn btn-primary" href="{% url 'friends_request' current_page_user.id %}">
+                                    <i class="halflings-icon white plus"></i>
+                                </a>
+                            {% endif %}
+                        {% endif %}
                     </div>
 					<div class="clearfix"></div>
 
@@ -56,7 +61,6 @@
                             </a>
                             <div class="box-icon">
 				    			<a href="#" class="btn-minimize"><i class="halflings-icon white chevron-up"></i></a>
-				    			<a href="#" class="btn-close"><i class="halflings-icon white remove"></i></a>
 				    		</div>
 				    	</div>
 				    	<div class="box-content">
@@ -81,7 +85,6 @@
                             </a>
                             <div class="box-icon">
 			    				<a href="#" class="btn-minimize"><i class="halflings-icon white chevron-up"></i></a>
-			    				<a href="#" class="btn-close"><i class="halflings-icon white remove"></i></a>
 			    			</div>
 			    		</div>
 			    		<div class="box-content">
@@ -110,7 +113,6 @@
 				    		<h2><i class="halflings-icon white list"></i><span class="break"></span>Wall</h2>
 				    		<div class="box-icon">
 				    			<a href="#" class="btn-minimize"><i class="halflings-icon white chevron-up"></i></a>
-				    			<a href="#" class="btn-close"><i class="halflings-icon white remove"></i></a>
 				    		</div>
 				    	</div>
 				    	<div class="box-content">

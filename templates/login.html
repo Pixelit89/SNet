@@ -4,12 +4,8 @@
 		<div class="row-fluid">
 					
 			<div class="row-fluid">
-				<div class="login-box">
-					<div class="icons">
-						<a href="index.html"><i class="halflings-icon home"></i></a>
-						<a href="#"><i class="halflings-icon cog"></i></a>
-					</div>
-					<h2>Login to your account</h2>
+				<div class="login-box" style="width: 250px;">
+					<h2 class="align-center" style="font-family: 'Open Sans', sans-serif;">Login to your account</h2>
 					<form class="form-horizontal" action="{% url 'logging_in' %}" method="post">
 						{% csrf_token %}
                         <fieldset>
@@ -25,21 +21,19 @@
                                 {{ form.password }}
 							</div>
 							<div class="clearfix"></div>
-							
-							<label class="remember" for="remember"><input type="checkbox" id="remember" />Remember me</label>
-
-							<div class="button-login">	
+							<div class="span12 text-center">
 								<button type="submit" class="btn btn-primary">Login</button>
 							</div>
 							<div class="clearfix"></div>
                         </fieldset>
 					</form>
 					<hr>
-					<h3>Forgot Password?</h3>
-					<p>
-						No problem, <a href="#">click here</a> to get a new password.
-					</p>	
+
+                    <div class="span12 text-center noMargin" style="margin-bottom: 10px;">
+                        <a href="{% url 'registration' %}" class="btn btn-success">Register a new account</a>
+                    </div>
 				</div><!--/span-->
+
 			</div><!--/row-->
 			
 
