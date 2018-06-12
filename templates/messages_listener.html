@@ -1,7 +1,5 @@
 <script>
     var prot = window.location.protocol == 'https:' ? 'wss:' : 'ws:';
-    console.log(window.location.protocol);
-    console.log(prot);
     var chatSocket_group = new WebSocket(
         prot + '//' + window.location.host + '/ws/chat/listener/');
     chatSocket_group.onmessage = function(e) {

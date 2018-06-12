@@ -53,11 +53,10 @@
 {#    <input tabindex="3" id="chat-message-submit" class="btn btn-success" type="button" value="Send"/>#}
     <script>
     var chatLogDom = document.getElementById('chat-log');
-
     var group = {{ group_json }};
-
+    var prot = window.location.protocol == 'https:' ? 'wss:' : 'ws:';
     var chatSocket = new WebSocket(
-        'ws://' + window.location.host +
+        prot + '//' + window.location.host +
         '/ws/chat/' + group + '/');
 
     chatSocket.onmessage = function(e) {

@@ -20,8 +20,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         await self.accept()
 
-        if not self.room_name == 'listener':
-            self.group = await  database_sync_to_async(self.get_group)()
+        self.group = await  database_sync_to_async(self.get_group)()
 
     async def disconnect(self, close_code):
         # Leave room group
@@ -72,9 +71,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 chat_room=self.group
             )
             message.save()
-        if param == 'connect':
-            history = ChatMessages.objects.filter(chat_room=room).order_by('-pub_date')[:10]
-            return history
         if param == 'disconnect':
             last_seen = LastSeen.objects.get(user_id=self.scope['user'].id, group=self.group)
             last_seen.last_seen = datetime.now()
