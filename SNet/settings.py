@@ -95,16 +95,8 @@ CHANNEL_LAYERS = {
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'SNet',
-#         'HOST': 'postgres://jwyvxvgdvnetvw:a29090969fee9782e70e65c3a7c2aa7cec7f1f54675f47091d8f696fc7a2c8ab@ec2-54-228-181-43.eu-west-1.compute.amazonaws.com:5432/da5pjub8do106l',
-#         'PORT': '5432',
-#         'PASSWORD': 'pass'
-#     }
-# }
 DATABASES = {'default': dj_database_url.config(ssl_require=True)}
+CONN_MAX_AGE = 0
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
