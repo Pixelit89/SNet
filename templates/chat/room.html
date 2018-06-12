@@ -5,11 +5,7 @@
     <div id="content" class="span10">
         <div class="box span8" onTablet="span12" onDesktop="span8">
             <div class="box-header">
-                <h2><i class="halflings-icon white comment"></i><span class="break"></span>Chats</h2>
-                <div class="box-icon">
-                    <a href="#" class="btn-minimize"><i class="halflings-icon white chevron-up"></i></a>
-                    <a href="#" class="btn-close"><i class="halflings-icon white remove"></i></a>
-                </div>
+                <h2><i class="halflings-icon white user"></i><span class="break"></span>{{ convers.first_name }} {{ convers.last_name }}</h2>
             </div>
             <div class="box-content">
                 <ul id='chat-log' class="chat">
@@ -37,20 +33,6 @@
             </div>
         </div>
     </div>
-{#    <div id="content" class="span10">#}
-{#    <form class="replyForm">#}
-{#        <fieldset>#}
-{#            <textarea tabindex="3" disabled class="input-xlarge span12" id="chat-log" name="body" rows="12"></textarea>#}
-{#            <input tabindex="3" class="input-xlarge span12" id="chat-message-input" type="text" size="100"/>#}
-{#            <div class="actions">#}
-{#                <input tabindex="3" id="chat-message-submit" class="btn btn-success" type="button" value="Send"/>#}
-{#            </div>#}
-{#        </fieldset>#}
-{#    </form>#}
-{#    </div>#}
-{#    <textarea id="chat-log" cols="100" rows="20"></textarea><br/>#}
-{#    <input id="chat-message-input" type="text" size="100"/><br/>#}
-{#    <input tabindex="3" id="chat-message-submit" class="btn btn-success" type="button" value="Send"/>#}
     <script>
     var chatLogDom = document.getElementById('chat-log');
     var group = {{ group_json }};

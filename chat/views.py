@@ -222,6 +222,12 @@ def accept_friend(request, friend_request_id):
     return HttpResponseRedirect(reverse_lazy('friends', kwargs={'pk': user.id}))
 
 
+def decline_friend(request, friend_request_id):
+    friends_request = FriendsRequest.objects.get(friend_request=friend_request_id, user_id=request.session['id'])
+    friends_request.delete()
+    return HttpResponseRedirect(reverse_lazy('friends', kwargs={'pk': request.session['id'], }))
+
+
 def remove_friend(request, current_page_id):
     user = ExtendedUser.objects.get(id=request.session['id'])
     friend = ExtendedUser.objects.get(id=current_page_id)
@@ -286,3 +292,9 @@ def search(request):
         pass
     request.session['founded'] = list(set(results))
     return HttpResponseRedirect(reverse_lazy('search_view', args=(request.session['id'], )))
+
+
+def delete_chat(request, user_id, group_name):
+    chat = ChatGroups.objects.get(name=group_name)
+    chat.delete()
+    return HttpResponseRedirect(reverse_lazy('messages', args=(user_id, )))

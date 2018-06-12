@@ -43,6 +43,9 @@
                                     </a>
                                 </td>
                                 <td style="" class="date {{ conv.id }}">{{ message.pub_date|date:"H:i d-M-y" }}</td>
+                                <td>
+                                    <a href="{% url 'delete_chat' user.id message.chat_room.name %}" class="red" style="padding: 3px; border-radius: 2px; color: white;">Delete</a>
+                                </td>
                             </tr>
                             {% endfor %}
                             </tbody>

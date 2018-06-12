@@ -38,6 +38,7 @@ urlpatterns = [
     re_path(r'^edit_profile_(?P<pk>[0-9])_update$', views.update_profile, name='update_profile'),
     re_path(r'^friends_request_(?P<current_page_id>[0-9])$', views.friends_request, name='friends_request'),
     re_path(r'^friends_request_(?P<friend_request_id>[0-9])_accept$', views.accept_friend, name='accept_friend'),
+    re_path(r'^friends_request_(?P<friend_request_id>[0-9])_decline$', views.decline_friend, name='decline_friend'),
     re_path(r'^remove_friend_(?P<current_page_id>[0-9])$', views.remove_friend, name='remove_friend'),
     re_path(r'^id_(?P<pk>[0-9])/friends$', views.FriendsView.as_view(), name='friends'),
     re_path(r'^id_(?P<pk>[0-9])/chat$', views.ConversationsList.as_view(), name="messages"),
@@ -48,5 +49,6 @@ urlpatterns = [
     re_path(r'^upload_pic$', views.upload_pic, name='upload_pic'),
     re_path(r'^id_(?P<pk>[0-9])/chat/(?P<group>[_0-9]+)/$', views.RoomView.as_view(), name='room'),
     re_path(r'^start_chat_(?P<user_id>[0-9])_(?P<current_page_id>[0-9])$', views.start_chat, name='start_chat'),
+    re_path(r'^del_chat_(?P<user_id>[0-9])_(?P<group_name>[_0-9]+)$', views.delete_chat, name='delete_chat'),
     path('admin/', admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
