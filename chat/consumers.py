@@ -84,24 +84,28 @@ class ChatConsumer(AsyncWebsocketConsumer):
 class ListenerConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
-        self.groups, self.last_seen = await database_sync_to_async(self.get_groups)()
-        last_seen = self.last_seen.last().last_seen
-        last_messages = []
         await self.accept()
-        for group in self.groups:
+        try:
+            self.groups, self.last_seen = await database_sync_to_async(self.get_groups)()
+            last_seen = self.last_seen.last().last_seen
+            last_messages = []
 
-            self.room_name = group.name
-            self.room_group_name = 'chat_%s' % self.room_name
-            # Join room group
-            await self.channel_layer.group_add(
-                self.room_group_name,
-                self.channel_name
-            )
-            last = group.chatmessages_set.last().pub_date
-            last_messages.append((group.name, last))
-            if last > last_seen:
-                await self.send(text_data="text")
-                break
+            for group in self.groups:
+
+                self.room_name = group.name
+                self.room_group_name = 'chat_%s' % self.room_name
+                # Join room group
+                await self.channel_layer.group_add(
+                    self.room_group_name,
+                    self.channel_name
+                )
+                last = group.chatmessages_set.last().pub_date
+                last_messages.append((group.name, last))
+                if last > last_seen:
+                    await self.send(text_data="text")
+                    break
+        except AttributeError:
+            pass
 
     async def disconnect(self, close_code):
         for group in self.groups:
